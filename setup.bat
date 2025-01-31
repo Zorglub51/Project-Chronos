@@ -101,8 +101,8 @@ GOTO check
 REM --------------------------------------------------------- INJECT HACK ---------------------------------------------------------
 :inject_hack
 if %TFTP_status%==[32m (
-    tools\nand_dump.exe restore 6 USB_partitions\mmcblk0p6.mod
-    tools\nand_dump.exe restore 7 USB_partitions\mmcblk0p7.mod
+    tools\nand_dump.exe restore 6 tools\USB_partitions\mmcblk0p6_USB
+    tools\nand_dump.exe restore 7 tools\USB_partitions\mmcblk0p7_USB
 ) else (
     echo.
     echo Start recovery mode first
