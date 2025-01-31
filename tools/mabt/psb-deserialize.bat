@@ -1,0 +1,1 @@
+MArchiveBatchTool.exe psb deserialize %1

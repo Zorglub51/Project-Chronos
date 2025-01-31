@@ -1,0 +1,1 @@
+MArchiveBatchTool.exe psb serialize %1

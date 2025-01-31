@@ -1,0 +1,1 @@
+MArchiveBatchTool.exe m pack --keep "%1" zstd 8!7ZZnJAr/wfc 64
