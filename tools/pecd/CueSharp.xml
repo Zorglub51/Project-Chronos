@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CueSharp</name>
+    </assembly>
+    <members>
+        <member name="T:CueSharp.CueSheet">
+            <summary>
+            A CueSheet class used to create, open, edit, and save cuesheets.
+            </summary>
+        </member>
+        <member name="P:CueSharp.CueSheet.Item(System.Int32)">
+            <summary>
+            Returns/Sets track in this cuefile.
+            </summary>
+            <param name="tracknumber">The track in this cuefile.</param>
+            <returns>Track at the tracknumber.</returns>
+        </member>
+        <member name="P:CueSharp.CueSheet.Catalog">
+            <summary>
+            The catalog number must be 13 digits long and is encoded according to UPC/EAN rules.
+            Example: CATALOG 1234567890123
+            </summary>
+        </member>
+        <member name="P:CueSharp.CueSheet.CDTextFile">
+            <summary>
+            This command is used to specify the name of the file that contains the encoded CD-TEXT information for the disc. This command is only used with files that were either created with the graphical CD-TEXT editor or generated automatically by the software when copying a CD-TEXT enhanced disc.
+            </summary>
+        </member>
+        <member name="P:CueSharp.CueSheet.Comments">
+            <summary>
+            This command is used to put comments in your CUE SHEET file.
+            </summary>
+        </member>
+        <member name="P:CueSharp.CueSheet.Garbage">
+            <summary>
+            Lines in the cue file that don't belong or have other general syntax errors.
+            </summary>
+        </member>
+        <member name="P:CueSharp.CueSheet.Performer">
+            <summary>
+            This command is used to specify the name of a perfomer for a CD-TEXT enhanced disc.
+            </summary>
+        </member>
+        <member name="P:CueSharp.CueSheet.Songwriter">
+            <summary>
+            This command is used to specify the name of a songwriter for a CD-TEXT enhanced disc.
+            </summary>
+        </member>
+        <member name="P:CueSharp.CueSheet.Title">
+            <summary>
+            The title of the entire disc as a whole.
+            </summary>
+        </member>
+        <member name="P:CueSharp.CueSheet.Tracks">
+            <summary>
+            The array of tracks on the cuesheet.
+            </summary>
+        </member>
+        <member name="M:CueSharp.CueSheet.#ctor">
+            <summary>
+            Create a cue sheet from scratch.
+            </summary>
+        </member>
+        <member name="M:CueSharp.CueSheet.#ctor(System.String,System.Char[])">
+            <summary>
+            Parse a cue sheet string.
+            </summary>
+            <param name="cueString">A string containing the cue sheet data.</param>
+            <param name="lineDelims">Line delimeters; set to "(char[])null" for default delimeters.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.#ctor(System.String)">
+            <summary>
+            Parses a cue sheet file.
+            </summary>
+            <param name="cuefilename">The filename for the cue sheet to open.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.#ctor(System.String,System.Text.Encoding)">
+            <summary>
+            Parses a cue sheet file.
+            </summary>
+            <param name="cuefilename">The filename for the cue sheet to open.</param>
+            <param name="encoding">The encoding used to open the file.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.#ctor(System.IO.StreamReader)">
+            <summary>
+            Parses a cue sheet file.
+            </summary>
+            <param name="file">The text stream for the cue sheet to read.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.RemoveEmptyLines(System.String[])">
+            <summary>
+            Trims leading and trailing spaces, removes any empty lines, elimating possible trouble.
+            </summary>
+            <param name="file"></param>
+        </member>
+        <member name="M:CueSharp.CueSheet.ParseTrack(System.String,System.Int32)">
+            <summary>
+            Parses the TRACK command. 
+            </summary>
+            <param name="value">The line in the cue file that contains the TRACK command with TRACK part removed.</param>
+            <param name="trackOn">The track currently processing.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.ResizeArray``1(``0[],System.Int32)">
+            <summary>
+            Reallocates an array with a new size, and copies the contents
+            of the old array to the new array.
+            </summary>
+            <param name="oldArray">The old array, to be reallocated.</param>
+            <param name="newSize">The new array size.</param>
+            <returns>A new array with the same contents.</returns>
+            <remarks >Useage: int[] a = {1,2,3}; a = (int[])ResizeArray(a,5);</remarks>
+        </member>
+        <member name="M:CueSharp.CueSheet.AddTrack(System.Int32,System.String)">
+            <summary>
+            Add a track to the current cuesheet.
+            </summary>
+            <param name="tracknumber">The number of the said track.</param>
+            <param name="datatype">The datatype of the track.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.AddTrack(System.String,System.String)">
+            <summary>
+            Add a track to the current cuesheet
+            </summary>
+            <param name="title">The title of the track.</param>
+            <param name="performer">The performer of this track.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.AddTrack(System.String,System.String,CueSharp.DataType)">
+            <summary>
+            Add a track to the current cuesheet
+            </summary>
+            <param name="title">The title of the track.</param>
+            <param name="performer">The performer of this track.</param>
+            <param name="datatype">The datatype for the track (typically DataType.Audio)</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.AddTrack(CueSharp.Track)">
+            <summary>
+            Add a track to the current cuesheet
+            </summary>
+            <param name="track">Track object to add to the cuesheet.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.RemoveTrack(System.Int32)">
+            <summary>
+            Remove a track from the cuesheet.
+            </summary>
+            <param name="trackIndex">The index of the track you wish to remove.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.AddIndex(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Add index information to an existing track.
+            </summary>
+            <param name="trackIndex">The array index number of track to be modified</param>
+            <param name="indexNum">The index number of the new index</param>
+            <param name="minutes">The minute value of the new index</param>
+            <param name="seconds">The seconds value of the new index</param>
+            <param name="frames">The frames value of the new index</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.RemoveIndex(System.Int32,System.Int32)">
+            <summary>
+            Remove an index from a track.
+            </summary>
+            <param name="trackIndex">The array-index of the track.</param>
+            <param name="indexIndex">The index of the Index you wish to remove.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.SaveCue(System.String)">
+            <summary>
+            Save the cue sheet file to specified location.
+            </summary>
+            <param name="filename">Filename of destination cue sheet file.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.SaveCue(System.String,System.Text.Encoding)">
+            <summary>
+            Save the cue sheet file to specified location.
+            </summary>
+            <param name="filename">Filename of destination cue sheet file.</param>
+            <param name="encoding">The encoding used to save the file.</param>
+        </member>
+        <member name="M:CueSharp.CueSheet.ToString">
+            <summary>
+            Method to output the cuesheet into a single formatted string.
+            </summary>
+            <returns>The entire cuesheet formatted to specification.</returns>
+        </member>
+        <member name="T:CueSharp.Flags">
+            <summary>
+            DCP - Digital copy permitted
+            4CH - Four channel audio
+            PRE - Pre-emphasis enabled (audio tracks only)
+            SCMS - Serial copy management system (not supported by all recorders)
+            There is a fourth subcode flag called "DATA" which is set for all non-audio tracks. This flag is set automatically based on the datatype of the track.
+            </summary>
+        </member>
+        <member name="T:CueSharp.FileType">
+            <summary>
+            BINARY - Intel binary file (least significant byte first)
+            MOTOROLA - Motorola binary file (most significant byte first)
+            AIFF - Audio AIFF file
+            WAVE - Audio WAVE file
+            MP3 - Audio MP3 file
+            </summary>
+        </member>
+        <member name="T:CueSharp.DataType">
+            <summary>
+            <list>
+            <item>AUDIO - Audio/Music (2352)</item>
+            <item>CDG - Karaoke CD+G (2448)</item>
+            <item>MODE1/2048 - CDROM Mode1 Data (cooked)</item>
+            <item>MODE1/2352 - CDROM Mode1 Data (raw)</item>
+            <item>MODE2/2336 - CDROM-XA Mode2 Data</item>
+            <item>MODE2/2352 - CDROM-XA Mode2 Data</item>
+            <item>CDI/2336 - CDI Mode2 Data</item>
+            <item>CDI/2352 - CDI Mode2 Data</item>
+            </list>
+            </summary>
+        </member>
+        <member name="T:CueSharp.Index">
+            <summary>
+            This command is used to specify indexes (or subindexes) within a track.
+            Syntax:
+             INDEX [number] [mm:ss:ff]
+            </summary>
+        </member>
+        <member name="P:CueSharp.Index.Number">
+            <summary>
+            Index number (0-99)
+            </summary>
+        </member>
+        <member name="P:CueSharp.Index.Minutes">
+            <summary>
+            Possible values: 0-99
+            </summary>
+        </member>
+        <member name="P:CueSharp.Index.Seconds">
+            <summary>
+            Possible values: 0-59
+            There are 60 seconds/minute
+            </summary>
+        </member>
+        <member name="P:CueSharp.Index.Frames">
+            <summary>
+            Possible values: 0-74
+            There are 75 frames/second
+            </summary>
+        </member>
+        <member name="M:CueSharp.Index.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            The Index of a track.
+            </summary>
+            <param name="number">Index number 0-99</param>
+            <param name="minutes">Minutes (0-99)</param>
+            <param name="seconds">Seconds (0-59)</param>
+            <param name="frames">Frames (0-74)</param>
+        </member>
+        <member name="T:CueSharp.AudioFile">
+            <summary>
+            This command is used to specify a data/audio file that will be written to the recorder.
+            </summary>
+        </member>
+        <member name="P:CueSharp.AudioFile.Filetype">
+            <summary>
+            BINARY - Intel binary file (least significant byte first)
+            MOTOROLA - Motorola binary file (most significant byte first)
+            AIFF - Audio AIFF file
+            WAVE - Audio WAVE file
+            MP3 - Audio MP3 file
+            </summary>
+        </member>
+        <member name="T:CueSharp.Track">
+            <summary>
+            Track that contains either data or audio. It can contain Indices and comment information.
+            </summary>
+        </member>
+        <member name="P:CueSharp.Track.Item(System.Int32)">
+            <summary>
+            Returns/Sets Index in this track.
+            </summary>
+            <param name="indexnumber">Index in the track.</param>
+            <returns>Index at indexnumber.</returns>
+        </member>
+        <member name="P:CueSharp.Track.Garbage">
+            <summary>
+            Lines in the cue file that don't belong or have other general syntax errors.
+            </summary>
+        </member>
+        <member name="P:CueSharp.Track.Title">
+            <summary>
+            If the TITLE command appears before any TRACK commands, then the string will be encoded as the title of the entire disc.
+            </summary>
+        </member>
+        <member name="M:CueSharp.Track.NewFlag(CueSharp.Flags)">
+            <summary>
+            Checks if the flag is indeed new in this track.
+            </summary>
+            <param name="new_flag">The new flag to be added to the track.</param>
+            <returns>True if this flag doesn't already exist.</returns>
+        </member>
+        <member name="M:CueSharp.Track.ToString">
+            <summary>
+            CueSheet string representation for debugging purposes
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

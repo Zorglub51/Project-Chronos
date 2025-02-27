@@ -1,0 +1,1062 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GMWare.M2.Pecd</name>
+    </assembly>
+    <members>
+        <member name="T:GMWare.M2.Pecd.AudioChunkGenerator">
+            <summary>
+            Processes audio samples and converts to Opus encoded chunks.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.AudioChunkGenerator.ChunkOffsets">
+            <summary>
+            Gets a list of chunk offsets.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.AudioChunkGenerator.SamplesWritten">
+            <summary>
+            Gets the number of converted samples written.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.AudioChunkGenerator.Lookahead">
+            <summary>
+            Gets the encoder's number of lookahead samples.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.AudioChunkGenerator.#ctor(System.Int32,System.Int32,System.IO.Stream,System.Int32,System.Single[],System.Boolean)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Pecd.AudioChunkGenerator"/>.
+            </summary>
+            <param name="sampleRate">The sample rate of the audio being written.</param>
+            <param name="channels">The number of channels of the audio.</param>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to write chunks to.</param>
+            <param name="frameSize">The Opus encoder frame size.</param>
+            <param name="silence">One chunk's worth of silence samples if optimizing away silent sections.</param>
+            <param name="relaxPositionCheck">If <c>true</c>, do not check for noncontinuous audio.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown if number of channels is less than 1.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="stream"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.AudioChunkGenerator.ProcessAsync(System.Int64,System.IO.Pipelines.PipeReader)">
+            <summary>
+            Asynchronously loads samples from a <paramref name="reader"/>.
+            </summary>
+            <param name="position">The samples position this range of samples start at.</param>
+            <param name="reader">The <see cref="T:System.IO.Pipelines.PipeReader"/> to read samples from.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.AudioChunkGenerator.BeginProcessing">
+            <summary>
+            Starts background processing of samples.
+            </summary>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.AudioChunkGenerator.FinishAsync">
+            <summary>
+            Finalizes chunk writing.
+            </summary>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.AudioChunkGenerator.Dispose">
+            <summary>
+            Disposes this instance.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Pecd.CdArchive">
+            <summary>
+            Represents an M2 CD image file.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.CdArchive.OPUS_SAMPLE_RATE">
+            <summary>
+            The Opus sample rate used in M2 CD images.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.CdArchive.OPUS_CHANNELS">
+            <summary>
+            The number of audio channels used in M2 CD images.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.CdArchive.Magic">
+            <summary>
+            Gets the magic number for identifying this type of image.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.CdArchive.DefaultSectionOrder">
+            <summary>
+            Gets the default order metadata sections are in.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.CdArchive.ArchString">
+            <summary>
+            Gets the default architecture identifier.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.CdArchive.DefaultSectorsPerChunk">
+            <summary>
+            Gets the default number of sectors for each compressed data chunk.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.CdArchive.SupportsPregap">
+            <summary>
+            Gets whether this archive format supports pregap.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.CdArchive.PregapAdjustLength">
+            <summary>
+            Gets pregap length when archive does not support pregap.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.CdArchive.Sections">
+            <summary>
+            Gets or sets the metadata sections.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.CdArchive.DiscInfos">
+            <summary>
+            Gets or sets the list of disc info sections.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.DecompressChunk(System.Byte[],System.Byte[])">
+            <summary>
+            Decompresses the chunk using the format's specific decompression codec.
+            </summary>
+            <param name="compressed">The buffer containing compressed data.</param>
+            <param name="decompressed">The buffer to decompress data into.</param>
+            <returns>The number of bytes written to <paramref name="decompressed"/>.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.CompressChunk(System.Byte[])">
+            <summary>
+            Compresses the chunk using the format's specific compression codec.
+            </summary>
+            <param name="data">The buffer containing data to compress.</param>
+            <returns>The compressed data.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.OpenRead(System.String)">
+            <summary>
+            Opens the image for reading.
+            </summary>
+            <param name="path">The path of the file to read from.</param>
+            <exception cref="T:System.InvalidOperationException">Thrown if file is already opened for reading.</exception>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.OpenRead(System.IO.Stream)">
+            <summary>
+            Opens the image for reading.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <exception cref="T:System.InvalidOperationException">Thrown if file is already opened for reading.</exception>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="stream"/> is not seekable.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.OpenWrite(System.String,System.UInt32)">
+            <summary>
+            Opens the image for creating new image.
+            </summary>
+            <param name="path">The path to write image to.</param>
+            <param name="key">The archive key for encryption.</param>
+            <exception cref="T:System.InvalidOperationException">Thrown if the image is already opened for writing.</exception>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.OpenWrite(System.IO.Stream,System.UInt32)">
+            <summary>
+            Opens the image for creating new image.
+            </summary>
+            <param name="stream">The stream to write to.</param>
+            <param name="key">The archive key for encryption.</param>
+            <exception cref="T:System.InvalidOperationException">Thrown if the image is already opened for writing.</exception>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="stream"/> is not seekable.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.GetChunk(System.Boolean,System.Int32)">
+            <summary>
+            Gets a chunk from the image.
+            </summary>
+            <param name="isAudio">Whether to retrieve an audio chunk.</param>
+            <param name="index">The index of the chunk to retrieve.</param>
+            <returns>The chunk data.</returns>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown if image has not been opened for reading.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown if the index is invalid.</exception>
+            <remarks>Data chunks are not decompressed when retrieved with this function.</remarks>
+            <seealso cref="M:GMWare.M2.Pecd.CdArchive.GetDataChunk(System.Int32)"/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.GetDataChunk(System.Int32)">
+            <summary>
+            Gets a decompressed data chunk from image.
+            </summary>
+            <param name="index">The index of the chunk.</param>
+            <returns>The decompressed chunk.</returns>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown if image has not been opened for reading.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown if the index is invalid.</exception>
+            <seealso cref="M:GMWare.M2.Pecd.CdArchive.GetChunk(System.Boolean,System.Int32)"/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.DumpSections(System.String)">
+            <summary>
+            Writes sections to disk.
+            </summary>
+            <param name="path">The path of the directory to write sections into.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="path"/> is <c>null</c> or whitespaces.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.DumpTocDetails(System.IO.TextWriter)">
+            <summary>
+            Dumps disc table of contents info to <paramref name="sw"/>.
+            </summary>
+            <param name="sw">The <see cref="T:System.IO.TextWriter"/> to print info to.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="sw"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.DumpOffsets(System.IO.TextWriter)">
+            <summary>
+            Writes the offsets section in a textual representation.
+            </summary>
+            <param name="sw">The <see cref="T:System.IO.TextWriter"/> to write to.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="sw"/> is <c>null</c>.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown if there is no offsets section inside the image.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.DumpAudzInfo(System.IO.TextWriter)">
+            <summary>
+            Dumps audz section info to <paramref name="sw"/>.
+            </summary>
+            <param name="sw">The <see cref="T:System.IO.TextWriter"/> to write to.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="sw"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.WriteHeaders(System.Boolean)">
+            <summary>
+            Writes headers to the image file.
+            </summary>
+            <param name="dummyEncrypt">If <c>true</c>, disables encrypting the header sections.</param>
+            <returns>The size of the headers in bytes.</returns>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown if image has not been opened for writing.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.WriteChunk(System.Byte[],System.Boolean,System.Int32)">
+            <summary>
+            Writes a chunk to the file.
+            </summary>
+            <param name="chunk">The data to write.</param>
+            <param name="isAudio">Whether this is an audio chunk.</param>
+            <param name="index">The index of the chunk.</param>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown if image has not been opened for writing.</exception>
+            <remarks>
+            Chunks are written in the order this function is called. <paramref name="index"/>
+            is only used for encryption.
+            </remarks>
+            <seealso cref="M:GMWare.M2.Pecd.CdArchive.WriteDataChunk(System.Byte[],System.Int32)"/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.WriteDataChunk(System.Byte[],System.Int32)">
+            <summary>
+            Compresses and writes data chunk to file.
+            </summary>
+            <param name="data">The data to write.</param>
+            <param name="index">The index of the chunk.</param>
+            <returns>The compressed size of the chunk.</returns>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown if image has not been opened for writing.</exception>
+            <remarks>
+            Chunks are written in the order this function is called. <paramref name="index"/>
+            is only used for encryption.
+            </remarks>
+            <seealso cref="M:GMWare.M2.Pecd.CdArchive.WriteChunk(System.Byte[],System.Boolean,System.Int32)"/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.DecryptTo(System.String)">
+            <summary>
+            Copies the image to a different file with the headers and sections decrypted.
+            </summary>
+            <param name="path">The path to save decrypted image to.</param>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown if image has not been opened for reading.</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="path"/> is <c>null</c> or whitespaces.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.Dispose">
+            <summary>
+            Disposes this instance.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.LoadSection(System.IO.BinaryReader,GMWare.M2.Pecd.Crypter,System.String,System.Int32)">
+            <summary>
+            Reads a section from <paramref name="br"/>.
+            </summary>
+            <param name="br">The <see cref="T:System.IO.BinaryReader"/> to read from.</param>
+            <param name="readCrypter">The <see cref="T:GMWare.M2.Pecd.Crypter"/> to use for decryption.</param>
+            <param name="tag">The tag of the section.</param>
+            <param name="length">The length of the section.</param>
+            <returns>The deserialized section.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.OpenReadDetect(System.String)">
+            <summary>
+            Opens an M2 CD image for reading.
+            </summary>
+            <param name="path">The path to read from.</param>
+            <returns>A <see cref="T:GMWare.M2.Pecd.CdArchive"/> instance.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="path"/> is <c>null</c> or whitespaces.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.OpenReadDetect(System.IO.Stream)">
+            <summary>
+            Opens an M2 CD image for reading.
+            </summary>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to read from.</param>
+            <returns>A <see cref="T:GMWare.M2.Pecd.CdArchive"/> instance.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="stream"/> is <c>null</c>.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.CdArchive.InstantiateByAlias(System.String)">
+            <summary>
+            Creates an M2 CD image instance by alias.
+            </summary>
+            <param name="alias">The alias of the image type.</param>
+            <returns>A <see cref="T:GMWare.M2.Pecd.CdArchive"/> instance.</returns>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="alias"/> is not known.</exception>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Crypter">
+            <summary>
+            Handles PECD data encryption.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Crypter.ArchKey">
+            <summary>
+            Gets or sets the archive key.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Crypter.Crypt(System.Byte[],System.UInt32)">
+            <summary>
+            Encrypts or decrypts <paramref name="buffer"/>.
+            </summary>
+            <param name="buffer">The buffer to encrypt or decrypt.</param>
+            <param name="fileKey">The key associated with the buffer.</param>
+        </member>
+        <member name="T:GMWare.M2.Pecd.IsoToPecdConverter">
+            <summary>
+            Converts cue sheet-based CD images to PECD format.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.IsoToPecdConverter.#ctor(System.String,System.Collections.Generic.IList{System.String},System.String,System.String,System.String,System.Boolean,System.Boolean)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Pecd.IsoToPecdConverter"/>
+            </summary>
+            <param name="archAlias">The alias of the CD image type.</param>
+            <param name="cuePaths">The path to the cue sheets for each disc.</param>
+            <param name="targetPath">The path of the output image.</param>
+            <param name="biosPath">The path of the primary BIOS image.</param>
+            <param name="bios2Path">The path of a secondary BIOS image.</param>
+            <param name="gutted">If <c>true</c>, stubs out all but the first data track.</param>
+            <param name="noSharedSilence"></param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="archAlias"/>, <paramref name="targetPath"/>, <paramref name="biosPath"/> is <c>null</c> or whitespace,
+            or if <paramref name="cuePaths"/> is <c>null</c> or contains no items. Also thrown if <paramref name="archAlias"/> is "pecd"
+            and <paramref name="bios2Path"/> is <c>null</c> or whitespace.
+            </exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.IsoToPecdConverter.Convert(System.Boolean)">
+            <summary>
+            Converts cue sheet-based image to PECD image.
+            </summary>
+            <param name="encrypt">Whether to encrypt the PECD image.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+        </member>
+        <member name="T:GMWare.M2.Pecd.LengthArrayEncoder">
+            <summary>
+            Contains methods for serializing and deserializing length arrays.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.LengthArrayEncoder.Decode(System.IO.BinaryReader)">
+            <summary>
+            Deserialize length array from <paramref name="br"/>.
+            </summary>
+            <param name="br">The <see cref="T:System.IO.BinaryReader"/> to read from.</param>
+            <returns>A list of lengths.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.LengthArrayEncoder.Encode(System.Collections.Generic.IList{System.Int32},System.IO.BinaryWriter)">
+            <summary>
+            Serializes length array to <paramref name="bw"/>.
+            </summary>
+            <param name="lengths">The array to serialize.</param>
+            <param name="bw">The <see cref="T:System.IO.BinaryWriter"/> to write to.</param>
+        </member>
+        <member name="T:GMWare.M2.Pecd.MecdArchive">
+            <summary>
+            Represents a Mega Drive Mini 2 CD image.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.MecdArchive.MAGIC">
+            <summary>
+            The value at the beginning of the file identifying a PECD image.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.MecdArchive.DEFAULT_SECTION_ORDER">
+            <summary>
+            The order sections are written in.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.MecdArchive.Magic">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.MecdArchive.DefaultSectionOrder">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.MecdArchive.ArchString">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.MecdArchive.DefaultSectorsPerChunk">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.MecdArchive.SupportsPregap">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.MecdArchive.PregapAdjustLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.MecdArchive.LoadSection(System.IO.BinaryReader,GMWare.M2.Pecd.Crypter,System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.MecdArchive.DecompressChunk(System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.MecdArchive.CompressChunk(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.PecdArchive">
+            <summary>
+            Represents a PC Engine Mini CD image.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.PecdArchive.MAGIC">
+            <summary>
+            The value at the beginning of the file identifying a PECD image.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.PecdArchive.DEFAULT_SECTION_ORDER">
+            <summary>
+            The order sections are written in.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.PecdArchive.Magic">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.PecdArchive.DefaultSectionOrder">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.PecdArchive.ArchString">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.PecdArchive.DefaultSectorsPerChunk">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.PecdArchive.SupportsPregap">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.PecdArchive.PregapAdjustLength">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.PecdArchive.LoadSection(System.IO.BinaryReader,GMWare.M2.Pecd.Crypter,System.String,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.PecdArchive.DecompressChunk(System.Byte[],System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.PecdArchive.CompressChunk(System.Byte[])">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.PecdToIsoConverter">
+            <summary>
+            Converts PECD image to CUE/ISO format.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.PecdToIsoConverter.Archive">
+            <summary>
+            Gets the loaded archive file.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.PecdToIsoConverter.WriteEmptySpace">
+            <summary>
+            Gets or sets whether to write the audio past the track length for stubbed tracks.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.PecdToIsoConverter.#ctor(System.String,System.String)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Pecd.PecdToIsoConverter"/>.
+            </summary>
+            <param name="pecdPath">The path to the PECD image.</param>
+            <param name="basePath">The base path to extract to. i.e. file extensions and name of this path is manipulated.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="pecdPath"/> or <paramref name="basePath"/> is <c>null</c> or whitespaces.
+            </exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.PecdToIsoConverter.Convert">
+            <summary>
+            Converts PECD image to CUE/ISO image.
+            </summary>
+            <returns>A task that represents the asynchronous operation.</returns>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.PecdToIsoConverter.Dispose">
+            <summary>
+            Disposes this instance.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Pecd.SampleRateConverter">
+            <summary>
+            Interpolates audio samples between sample rates.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SampleRateConverter.SamplesWritten">
+            <summary>
+            Gets the number of samples output.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SampleRateConverter.Input">
+            <summary>
+            Gets the <see cref="T:System.IO.Pipelines.PipeWriter"/> for samples to be converted.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SampleRateConverter.Output">
+            <summary>
+            Gets the <see cref="T:System.IO.Pipelines.PipeReader"/> for samples that have beeen converted.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SampleRateConverter.#ctor(System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Instantiates a new instance of <see cref="T:GMWare.M2.Pecd.SampleRateConverter"/>.
+            </summary>
+            <param name="inputRate">The input sample rate.</param>
+            <param name="outputRate">The output sample rate.</param>
+            <param name="channels">The number of channels in the audio.</param>
+            <param name="floatInput">Whether the input is floating point or 16-bit signed integer samples.</param>
+            <param name="floatOutput">Whether the output should be floating point or 16-bit signed integer samples.</param>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SampleRateConverter.ProcessAsync">
+            <summary>
+            Starts background processing of samples.
+            </summary>
+            <returns>A task that represents the asynchronous operation.</returns>
+            <exception cref="T:System.ObjectDisposedException">Thrown if instance has been disposed.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SampleRateConverter.Dispose(System.Boolean)">
+            <summary>
+            Disposes this instance
+            </summary>
+            <param name="disposing">True if explicitly disposing, false if in finalizer</param>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SampleRateConverter.Dispose">
+            <summary>
+            Disposes this instance.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.ArchSection">
+            <summary>
+            Represents an architecture identifier section.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Sections.ArchSection.TAG">
+            <summary>
+            The tag for the section.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.AudzSection">
+            <summary>
+            Represents a section for chunked audio information.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Sections.AudzSection.TAG">
+            <summary>
+            The tag for the section.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.AudzSection.TotalSamples">
+            <summary>
+            Gets or sets the total number of Opus samples in the image.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.AudzSection.PaddingSamples">
+            <summary>
+            Gets or sets the encoder pre-skip.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.AudzSection.Silence">
+            <summary>
+            Gets or sets the compressed chunk of silence.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.AudzSection.Read(System.IO.BinaryReader,System.Int32,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.AudzSection.Write(System.IO.BinaryWriter,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.BinarySection">
+            <summary>
+            Represents a section for storing arbitrary data.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.BinarySection.Data">
+            <summary>
+            Gets or sets the stored data.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.BinarySection.SkipCrypt">
+            <summary>
+            Gets or sets whether the section should skip being encrypted/decrypted.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.BinarySection.Read(System.IO.BinaryReader,System.Int32,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.BinarySection.Write(System.IO.BinaryWriter,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.Bio2Section">
+            <summary>
+            Represents a section for storing a System Card image.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Sections.Bio2Section.TAG">
+            <summary>
+            The tag for the section.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.BiosSection">
+            <summary>
+            Represents a section for storing a Super System Card image.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Sections.BiosSection.TAG">
+            <summary>
+            The tag for the section.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.Cgp0Section">
+            <summary>
+            Represents a tile/sprite replacement set section.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Sections.Cgp0Section.TAG">
+            <summary>
+            The tag for the section.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.Cgp0Section.TileReplacements">
+            <summary>
+            Gets or sets tile replacements.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.Cgp0Section.SpriteReplacements">
+            <summary>
+            Gets or sets sprite replacements.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.Cgp0Section.Read(System.IO.BinaryReader,System.Int32,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.Cgp0Section.Write(System.IO.BinaryWriter,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.InfoSection">
+            <summary>
+            Represents a section for track listing and encryption key.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Sections.InfoSection.TAG">
+            <summary>
+            The tag for the section.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.InfoSection.Tracks">
+            <summary>
+            Gets or sets the list of tracks.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.InfoSection.IsKeySource">
+            <summary>
+            Gets or sets whether this instance contains the archive key.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.InfoSection.DataLength">
+            <summary>
+            Gets the LSN length of all the data tracks in this disc.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.InfoSection.DiscLength">
+            <summary>
+            Gets the LSN length of this disc.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.InfoSection.Read(System.IO.BinaryReader,System.Int32,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.InfoSection.Write(System.IO.BinaryWriter,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.ISection">
+            <summary>
+            Interface for a section.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.ISection.Read(System.IO.BinaryReader,System.Int32,GMWare.M2.Pecd.Crypter)">
+            <summary>
+            Reads the section from a <see cref="T:System.IO.BinaryReader"/>.
+            </summary>
+            <param name="br">The <see cref="T:System.IO.BinaryReader"/> to read from.</param>
+            <param name="length">The length of the section.</param>
+            <param name="crypter">The <see cref="T:GMWare.M2.Pecd.Crypter"/> to use for decryption.</param>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.ISection.Write(System.IO.BinaryWriter,GMWare.M2.Pecd.Crypter)">
+            <summary>
+            Writes the section to a <see cref="T:System.IO.BinaryWriter"/>.
+            </summary>
+            <param name="bw">The <see cref="T:System.IO.BinaryWriter"/> to write to.</param>
+            <param name="crypter">The <see cref="T:GMWare.M2.Pecd.Crypter"/> to use for encryption.</param>
+            <returns>The length of the section.</returns>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.OffsSection">
+            <summary>
+            Represents an offsets section.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Sections.OffsSection.TAG">
+            <summary>
+            The tag for the section.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.OffsSection.TotalDataSectors">
+            <summary>
+            Gets or sets the total number of data sectors in the image.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.OffsSection.SectorsPerChunk">
+            <summary>
+            Gets or sets the number of sectors per data chunk.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.OffsSection.DataChunksCount">
+            <summary>
+            Gets or sets the number of data chunks in the image.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.OffsSection.AudioChunksCount">
+            <summary>
+            Gets or sets the number of audio chunks in the image.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.OffsSection.Offsets">
+            <summary>
+            Gets or sets the list of offsets.
+            </summary>
+            <remarks>The last entry of the list is the length of the file, used for calculating chunk lengths.</remarks>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.OffsSection.Read(System.IO.BinaryReader,System.Int32,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.OffsSection.Write(System.IO.BinaryWriter,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Sections.StringSection">
+            <summary>
+            Represents a section containing string data.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.StringSection.Value">
+            <summary>
+            Gets or sets the value of the section.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Sections.StringSection.Encrypt">
+            <summary>
+            Gets or sets whether this section should be encrypted.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.StringSection.Read(System.IO.BinaryReader,System.Int32,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Sections.StringSection.Write(System.IO.BinaryWriter,GMWare.M2.Pecd.Crypter)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.SpriteReplacement">
+            <summary>
+            Represents sprite replacement information.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SpriteReplacement.OriginalSprite">
+            <summary>
+            Gets or sets the original sprite.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SpriteReplacement.IsGlobalReplacement">
+            <summary>
+            Gets or sets whether the sprite address is ignored.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SpriteReplacement.Address">
+            <summary>
+            Gets or sets the sprite address.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SpriteReplacement.ReplacementSprite">
+            <summary>
+            Gets or sets the replacement sprite.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SpriteReplacement.Read(System.IO.BinaryReader)">
+            <summary>
+            Reads the info from <paramref name="br"/>.
+            </summary>
+            <param name="br">The <see cref="T:System.IO.BinaryReader"/> to read from.</param>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SpriteReplacement.Write(System.IO.BinaryWriter)">
+            <summary>
+            Writes the info to <paramref name="bw"/>.
+            </summary>
+            <param name="bw">The <see cref="T:System.IO.BinaryWriter"/> to write to.</param>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SpriteReplacement.ExtractOriginalSprite">
+            <summary>
+            Converts the original sprite to indexed pixels.
+            </summary>
+            <returns>The converted sprite.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SpriteReplacement.ExtractReplacementSprite">
+            <summary>
+            Converts the replacement sprite to indexed pixels.
+            </summary>
+            <returns>The converted sprite.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SpriteReplacement.ImportOriginalSprite(System.Byte[])">
+            <summary>
+            Imports indexed pixels into the original sprite.
+            </summary>
+            <param name="pixels">The pixels to import.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="pixels"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="pixels"/> is not 256 bytes in length.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SpriteReplacement.ImportReplacementSprite(System.Byte[])">
+            <summary>
+            Imports indexed pixels into the replacement sprite.
+            </summary>
+            <param name="pixels">The pixels to import.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="pixels"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="pixels"/> is not 256 bytes in length.</exception>
+        </member>
+        <member name="T:GMWare.M2.Pecd.SubStream">
+            <summary>
+            Provides a generic view of a sequence of bytes into a section of a <see cref="T:System.IO.Stream"/>.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SubStream.#ctor(System.IO.Stream,System.Int64,System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SubStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SubStream.Length">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SubStream.CanRead">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SubStream.CanWrite">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SubStream.CanSeek">
+            <inheritdoc/>
+        </member>
+        <member name="P:GMWare.M2.Pecd.SubStream.Position">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SubStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SubStream.SetLength(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SubStream.Flush">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SubStream.Dispose(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GMWare.M2.Pecd.SubStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GMWare.M2.Pecd.TileReplacement">
+            <summary>
+            Represents tile replacement information.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.TileReplacement.OriginalTile">
+            <summary>
+            Gets or sets the original tile.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.TileReplacement.IsGlobalReplacement">
+            <summary>
+            Gets or sets whether the tile address is ignored.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.TileReplacement.Address">
+            <summary>
+            Gets or sets the tile address.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.TileReplacement.ReplacementTile">
+            <summary>
+            Gets or sets the replacement tile.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.TileReplacement.Read(System.IO.BinaryReader)">
+            <summary>
+            Reads the info from <paramref name="br"/>.
+            </summary>
+            <param name="br">The <see cref="T:System.IO.BinaryReader"/> to read from.</param>
+        </member>
+        <member name="M:GMWare.M2.Pecd.TileReplacement.Write(System.IO.BinaryWriter)">
+            <summary>
+            Writes the info to <paramref name="bw"/>.
+            </summary>
+            <param name="bw">The <see cref="T:System.IO.BinaryWriter"/> to write to.</param>
+        </member>
+        <member name="M:GMWare.M2.Pecd.TileReplacement.ExtractOriginalTile">
+            <summary>
+            Converts the original tile to indexed pixels.
+            </summary>
+            <returns>The converted tile.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.TileReplacement.ExtractReplacementTile">
+            <summary>
+            Converts the replacement tile to indexed pixels.
+            </summary>
+            <returns>The converted tile.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.TileReplacement.ImportOriginalTile(System.Byte[])">
+            <summary>
+            Imports indexed pixels into the original tile.
+            </summary>
+            <param name="pixels">The pixels to import.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="pixels"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="pixels"/> is not 64 bytes in length.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.TileReplacement.ImportReplacementTile(System.Byte[])">
+            <summary>
+            Imports indexed pixels into the replacement tile.
+            </summary>
+            <param name="pixels">The pixels to import.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="pixels"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="pixels"/> is not 64 bytes in length.</exception>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Track">
+            <summary>
+            Represents a CD track.
+            </summary>
+            <remarks>Lengths and offset are in LSN (logical sector number) units.</remarks>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Track.Index00Length">
+            <summary>
+            Gets or sets the length of index 00 (pregap).
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Track.IsAudio">
+            <summary>
+            Gets or sets whether this track is an audio track.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Track.Offset">
+            <summary>
+            Gets or sets the offset of index 01.
+            </summary>
+        </member>
+        <member name="P:GMWare.M2.Pecd.Track.Index01Length">
+            <summary>
+            Gets or sets the length of index 01.
+            </summary>
+        </member>
+        <member name="T:GMWare.M2.Pecd.Utils">
+            <summary>
+            Contains utility functions.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Utils.FRAMES_PER_SECOND">
+            <summary>
+            The number of CD frames per second.
+            </summary>
+        </member>
+        <member name="F:GMWare.M2.Pecd.Utils.PECD_BYTES_PER_SECTOR">
+            <summary>
+            The number of bytes per sector for data chunks.
+            </summary>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Utils.LsnToMsf(System.Int32)">
+            <summary>
+            Converts LSN to MSF.
+            </summary>
+            <param name="lsn">The logical sector number.</param>
+            <returns>A time in minutes/seconds/frames format.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Utils.LsnToBytes(System.Int32,System.Int32)">
+            <summary>
+            Converts LSN to length in bytes.
+            </summary>
+            <param name="lsn">The logical sector number.</param>
+            <param name="frameSize">The number of bytes per frame.</param>
+            <returns>The length in bytes for the given LSN.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Utils.GetLsn(CueSharp.Index)">
+            <summary>
+            Calculates the LSN of this index.
+            </summary>
+            <param name="index">The index.</param>
+            <returns>The LSN of the index.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Utils.IsIndexValid(CueSharp.Index)">
+            <summary>
+            Determines if this index is valid.
+            </summary>
+            <param name="index">The index.</param>
+            <returns>Whether this index is valid.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Utils.GetIndex(CueSharp.Track,System.Int32)">
+            <summary>
+            Gets an index by its number.
+            </summary>
+            <param name="track">The track.</param>
+            <param name="index">The index number.</param>
+            <returns>The index associated with that number.</returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when no index with the number is found.</exception>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Utils.CastToBytes``1(``0[],System.Int32)">
+            <summary>
+            Converts an array to a <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The array's type.</typeparam>
+            <param name="arr">The array to convert.</param>
+            <param name="length">The length to take from the array.</param>
+            <returns>The <see cref="T:System.Memory`1"/> made from the array.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Utils.CastToBytes``1(System.Memory{``0})">
+            <summary>
+            Converts a <see cref="T:System.Memory`1"/> to a <see cref="T:System.Memory`1"/>.
+            </summary>
+            <typeparam name="T">The type of the memory element.</typeparam>
+            <param name="mem">The memory.</param>
+            <returns>The <see cref="T:System.Memory`1"/> made from the memory.</returns>
+        </member>
+        <member name="M:GMWare.M2.Pecd.Utils.CopyPipelineToStream(System.IO.Pipelines.PipeReader,System.IO.Stream)">
+            <summary>
+            Copies data from a <see cref="T:System.IO.Pipelines.PipeReader"/> to a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="reader">The <see cref="T:System.IO.Pipelines.PipeReader"/> to copy from.</param>
+            <param name="stream">The <see cref="T:System.IO.Stream"/> to write to.</param>
+            <returns>A task that represents the asynchronous operation.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown if <paramref name="reader"/> or <paramref name="stream"/> is <c>null</c>.
+            </exception>
+        </member>
+        <member name="M:Core.WavFile.ReadHeader(System.IO.BinaryReader)">
+            <summary>
+            Reading all samples of a 16-bit stereo wav file into arrays.
+            </summary>
+        </member>
+        <member name="M:Core.WavFile.WriteHeader(System.IO.BinaryWriter)">
+            <summary>
+            Writing all 16-bit stereo samples from arrays into wav file.
+            </summary>
+        </member>
+    </members>
+</doc>
